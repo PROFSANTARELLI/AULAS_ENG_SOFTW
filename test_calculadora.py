@@ -10,7 +10,7 @@ def test_soma_positiva():
     """
     # Preparação (Arrange) - já temos os números
     # Ação (Act)
-    resultado = somar(2, 2)
+    resultado = somar(2, 3)
     # Verificação (Assert)
     assert resultado == 5
 
