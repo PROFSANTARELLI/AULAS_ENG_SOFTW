@@ -1,7 +1,7 @@
 # tests/test_calculadora.py
 
 import pytest
-from app.calculadora import somar
+from calculadora import somar
 
 def test_soma_positiva():
     """
