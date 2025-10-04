@@ -1,0 +1,139 @@
+Vamos dividir o processo em 3 etapas claras:
+Estrutura do Projeto: Criar os arquivos necessários.
+Código e Teste: Escrever a função Python e o teste unitário com Pytest.
+Automação com GitHub Actions: Criar o workflow que executa os testes automaticamente.
+
+
+Passo 1: Estrutura do Projeto
+Para manter tudo organizado, vamos criar a seguinte estrutura de arquivos. Você pode criar esses arquivos localmente no seu computador, dentro de um novo repositório Git.
+Plain Text
+seu-repositorio/
+├── app/
+│   ├── __init__.py
+│   └── calculadora.py
+├── tests/
+│   ├── __init__.py
+│   └── test_calculadora.py
+└── .github/
+    └── workflows/
+        └── ci.yml
+app/calculadora.py: Conterá nossa lógica de negócio (uma função simples de soma).
+tests/test_calculadora.py: Conterá nosso caso de teste para a função de soma.
+.github/workflows/ci.yml: Definirá o pipeline de Integração Contínua no GitHub Actions.
+Passo 2: Código da Aplicação e do Teste
+Agora, vamos preencher esses arquivos com o código.
+
+
+A) Código da Aplicação (app/calculadora.py)
+Esta é a função que queremos testar. É uma função de soma muito simples.
+
+# app/calculadora.py
+
+def somar(a: int, b: int) -> int:
+    """
+    Função que recebe dois números inteiros e retorna sua soma.
+    """
+    if not isinstance(a, int) or not isinstance(b, int):
+        raise TypeError("Ambas as entradas devem ser números inteiros.")
+    return a + b
+B) Código do Teste Unitário (tests/test_calculadora.py)
+Usaremos o Pytest para criar um teste. A sintaxe do Pytest é muito limpa. Ele identifica automaticamente arquivos que começam com test_ e funções dentro deles que também começam com test_.
+Primeiro, você precisará do Pytest. Se ainda não o tiver, instale-o:
+pip install pytest
+Agora, crie o arquivo de teste:
+Python
+# tests/test_calculadora.py
+
+import pytest
+from app.calculadora import somar
+
+def test_soma_positiva():
+    """
+    Testa a soma de dois números positivos.
+    Cenário: 2 + 3 = 5
+    """
+    # Preparação (Arrange) - já temos os números
+    # Ação (Act)
+    resultado = somar(2, 3)
+    # Verificação (Assert)
+    assert resultado == 5
+
+def test_soma_com_negativo():
+    """
+    Testa a soma de um número positivo com um negativo.
+    Cenário: 10 + (-5) = 5
+    """
+    assert somar(10, -5) == 5
+
+def test_soma_com_zero():
+    """
+    Testa a soma de um número com zero.
+    Cenário: 7 + 0 = 7
+    """
+    assert somar(7, 0) == 7
+
+def test_soma_deve_lancar_excecao_com_nao_inteiros():
+    """
+    Testa se a função lança um TypeError ao receber entradas que não são inteiras.
+    """
+    with pytest.raises(TypeError):
+        somar("2", 3) # "2" é uma string, não um inteiro
+Para testar localmente:
+Navegue até a raiz do seu projeto (seu-repositorio/).
+Execute o comando pytest no terminal.
+Você deverá ver uma saída indicando que 4 testes passaram com sucesso!
+Passo 3: Automação com GitHub Actions (.github/workflows/ci.yml)
+Esta é a etapa final e mais importante para a automação. O arquivo ci.yml dirá ao GitHub o que fazer sempre que um novo código for enviado (push) para o repositório.
+YAML
+# .github/workflows/ci.yml
+
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: CI de Testes com Pytest
+
+# Gatilho (Trigger): Define quando o workflow deve ser executado
+on:
+  push:
+    branches: [ "main", "develop" ] # Executa em pushes para as branches main e develop
+  pull_request:
+    branches: [ "main" ] # Executa também em pull requests para a branch main
+
+# Jobs: Define as tarefas a serem executadas
+jobs:
+  # Nome do job (pode ser qualquer nome)
+  build-and-test:
+    # Máquina virtual onde o job será executado
+    runs-on: ubuntu-latest
+
+    # Passos (Steps) que compõem o job
+    steps:
+      # 1. Checkout do código: Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # 2. Configurar o ambiente Python
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3. Instalar dependências: Instala o Pytest e outras bibliotecas necessárias
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      # 4. Executar os testes: Roda o comando pytest
+      - name: Executar testes com Pytest
+        run: |
+          pytest
+
+
+
+Como Ver o Ciclo Completo
+Crie um repositório no GitHub.
+Envie (push) os arquivos que criamos (calculadora.py, test_calculadora.py e ci.yml) para esse repositório.
+Acesse a aba "Actions" no seu repositório do GitHub.
+Você verá um novo workflow chamado "CI de Testes com Pytest" em execução.
+Clique nele para ver os detalhes. Você poderá acompanhar cada passo: Checkout, Configurar Python, Instalar dependências e, finalmente, Executar testes com Pytest.
+Se tudo estiver correto, todos os passos terão um ícone de verificação verde (✅), indicando que o ciclo foi executado com sucesso!
+Parabéns! Você acaba de criar um pipeline de CI/CD básico, mas completo, que garante automaticamente que sua função de soma continua funcionando como esperado a cada nova alteração no código.
