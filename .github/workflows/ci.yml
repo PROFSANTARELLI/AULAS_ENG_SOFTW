@@ -1,0 +1,41 @@
+# .github/workflows/ci.yml
+
+# Nome do workflow que aparecerá na aba "Actions" do GitHub
+name: CI de Testes calculado com Pytest
+
+# Gatilho (Trigger): Define quando o workflow deve ser executado
+on:
+  push:
+    branches: [ "main", "develop" ] # Executa em pushes para as branches main e develop
+  pull_request:
+    branches: [ "main" ] # Executa também em pull requests para a branch main
+
+# Jobs: Define as tarefas a serem executadas
+jobs:
+  # Nome do job (pode ser qualquer nome)
+  build-and-test:
+    # Máquina virtual onde o job será executado
+    runs-on: ubuntu-latest
+
+    # Passos (Steps) que compõem o job
+    steps:
+      # 1. Checkout do código: Baixa o código do seu repositório para a máquina virtual
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      # 2. Configurar o ambiente Python
+      - name: Configurar Python 3.10
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # 3. Instalar dependências: Instala o Pytest e outras bibliotecas necessárias
+      - name: Instalar dependências
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+
+      # 4. Executar os testes: Roda o comando pytest
+      - name: Executar testes com Pytest
+        run: |
+          pytest
